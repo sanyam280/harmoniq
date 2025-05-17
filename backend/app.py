@@ -1,15 +1,14 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from deepface import DeepFace
 import pylast
 from flask_cors import CORS
 import cv2
 import numpy as np
-import base64
 import logging
 
 # Setup
 app = Flask(__name__)
-CORS(app)  # Allow cross-origin from browser
+CORS(app)
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -41,28 +40,32 @@ def get_recommendations(lastfm, emotion):
             tracks = tag.get_top_tracks(limit=5)
             return [{"title": t.item.get_name(), "artist": t.item.get_artist().get_name()} for t in tracks]
         except Exception as e:
-            logger.warning(f"Tag {tag_str} failed: {e}")
+            logger.warning(f"Tag {tag_str} failed: {e}", exc_info=True)
     return []
 
-@app.route('/analyze', methods=['POST'])
+@app.route('/')
+def home():
+    return render_template('index2.html')
+
 @app.route('/analyze', methods=['POST'])
 def analyze():
     file = request.files['image']
     img = cv2.imdecode(np.frombuffer(file.read(), np.uint8), cv2.IMREAD_COLOR)
-    
-    analysis = DeepFace.analyze(img, actions=['emotion'], enforce_detection=False)
-    emotion = analysis[0]['dominant_emotion'].lower()
 
-    lastfm = init_lastfm()
-    recommendations = get_recommendations(lastfm, emotion)
-    # print(emotion)
-    # print(recommendations)
+    try:
+        analysis = DeepFace.analyze(img, actions=['emotion'], enforce_detection=False)
+        emotion = analysis[0]['dominant_emotion'].lower()
 
-    return jsonify({
-        'emotion': emotion,
-        'recommendations': recommendations
-    })
+        lastfm = init_lastfm()
+        recommendations = get_recommendations(lastfm, emotion)
 
+        return jsonify({
+            'emotion': emotion,
+            'recommendations': recommendations
+        })
+    except Exception as e:
+        logger.error(f"Error during analysis: {e}", exc_info=True)
+        return jsonify({'error': 'Failed to process image or get recommendations.'}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
