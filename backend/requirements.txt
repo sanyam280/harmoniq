@@ -3,3 +3,5 @@ deepface
 pylast
 opencv-python-headless
 gunicorn
+tensorflow
+tf-keras
