@@ -2,3 +2,4 @@ Flask
 deepface
 pylast
 opencv-python-headless
+gunicorn
