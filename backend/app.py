@@ -5,6 +5,7 @@ from flask_cors import CORS
 import cv2
 import numpy as np
 import logging
+import os
 
 # Setup
 app = Flask(__name__)
@@ -67,5 +68,7 @@ def analyze():
         logger.error(f"Error during analysis: {e}", exc_info=True)
         return jsonify({'error': 'Failed to process image or get recommendations.'}), 500
 
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0',port = port)
