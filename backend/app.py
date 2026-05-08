@@ -6,7 +6,7 @@ import cv2
 import numpy as np
 import logging
 import os
-
+from dotenv import load_dotenv
 # Setup
 app = Flask(__name__)
 CORS(app)
@@ -15,8 +15,8 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Last.fm credentials
-LASTFM_API_KEY = "8f2e5122c0034cb7c1eaf3a0e21c7ee5"
-LASTFM_API_SECRET = "fd5d0aae8dbc49c3d514b0dfc078091f"
+LASTFM_API_KEY = os.getenv("LASTFM_API_KEY")
+LASTFM_API_SECRET = os.getenv("LASTFM_API_SECRET")
 
 # Connect to Last.fm
 def init_lastfm():

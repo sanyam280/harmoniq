@@ -3,14 +3,15 @@ from deepface import DeepFace
 import pylast  # Last.fm library
 import time
 import logging
-
+import os
+from dotenv import load_dotenv
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Last.fm API Configuration
-LASTFM_API_KEY = "8f2e5122c0034cb7c1eaf3a0e21c7ee5"
-LASTFM_API_SECRET = "fd5d0aae8dbc49c3d514b0dfc078091f"
+LASTFM_API_KEY = os.getenv("LASTFM_API_KEY")
+LASTFM_API_SECRET = os.getenv("LASTFM_API_SECRET")
 
 # Initialize Last.fm network
 def initialize_lastfm():
